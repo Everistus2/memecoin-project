@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const walletSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
@@ -6,10 +6,10 @@ const walletSchema = new mongoose.Schema({
   address: {type: String, requried: true}, 
   balances: [
     {
-      currencyType: { type: String }, 
-      amount: { type: mongoose.Decimal128},
+      token: { type: mongoose.Schema.Types.ObjectId, ref: "Token", required: true  }, 
+      amount: { type: Number},
     },
   ],
 });
 
-export default mongoose.model("Wallet", walletSchema);
+module.exports = mongoose.model("Wallet", walletSchema);

@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const tokenSchema = new mongoose.Schema({
   latestTokens: []
 });
 
-export default mongoose.model("Token", tokenSchema);
+module.exports = mongoose.model("Token", tokenSchema);

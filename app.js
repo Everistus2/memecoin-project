@@ -7,7 +7,7 @@ const main = async () => {
       // Get Latest Token list
       console.log("app starting");
       const data = await fetchLatest();
-      if (data.length === 0) {
+      if (data && data.length === 0) {
         console.log("No New Tokens");
         return;
       }

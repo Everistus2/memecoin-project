@@ -1,9 +1,10 @@
-import userModel from "../models/userModel.js";
-import JWT from "jsonwebtoken";
+const userModel = require("../models/userModel.js");
+const JWT = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 const saltRounds = 10;
 
-export const registerController = async (req, res) => {
+const registerController = async (req, res) => {
   try {
     const { name, email, password, phone } = req.body;
 
@@ -59,12 +60,13 @@ export const registerController = async (req, res) => {
 };
 
 // POST LOGIN
-export const loginController = async (req, res) => {
+const loginController = async (req, res) => {
   try {
     const { email, password } = req.body;
 
     // Validation
 
+    console.log(email, password)
     if (!email || !password) {
       return res.status(404).send({
         success: false,
@@ -118,7 +120,7 @@ export const loginController = async (req, res) => {
 };
 
 // update profile
-export const updateProfileController = async (req, res) => {
+const updateProfileController = async (req, res) => {
   try {
     const { name, email, password, phone } = req.body;
     const user = await userModel.findById(req.user._id);
@@ -155,3 +157,8 @@ export const updateProfileController = async (req, res) => {
   }
 };
 
+module.exports = {
+  registerController,
+  loginController,
+  updateProfileController,
+};

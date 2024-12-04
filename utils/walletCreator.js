@@ -1,12 +1,13 @@
-const { Keypair } = require('@solana/web3.js');
+const {Keypair} = require('@solana/web3.js');
+const bs58 = require("bs58");
 // const {ethers} = require('ethers');
 
 // Create Solana wallet - No 1
-export const createSolWallet = () => {
+createSolWallet = () => {
     const keypair = Keypair.generate();
-    const publickKey = keypair.publickKey.toBase58();
+    const publicKey = keypair.publicKey.toBase58();
     const privateKey = keypair.secretKey;
-    return {privateKey, publickKey};
+    return {privateKey, publicKey};
 }
 
 // Create EVM wallet - No 2
@@ -18,3 +19,5 @@ export const createSolWallet = () => {
 // Create BTC wallet
 
 // Create XRP wallet
+
+module.exports = createSolWallet;

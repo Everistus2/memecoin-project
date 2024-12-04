@@ -1,16 +1,17 @@
-import express from "express";
-import {
+const express = require("express");
+
+const {
   registerController,
   loginController,
   updateProfileController,
-} from "../controllers/authController.js";
-import { isAdmin, requireSignIn } from "../middlewares/authMiddleware.js";
+} = require("../controllers/authController.js");
+const { isAdmin, requireSignIn } = require("../middlewares/authMiddleware.js");
 
 // Router Object
 const router = express.Router();
 
 // REGISTER || METHOD POST
-router.post("/register", registerController);
+router.post("/register", registerController); 
 
 // LOGIN || METHOD POST
 router.post("/login", loginController);
@@ -18,4 +19,4 @@ router.post("/login", loginController);
 // update profile
 router.put("/profile", requireSignIn, updateProfileController);
 
-export default router;
+module.exports = router;
