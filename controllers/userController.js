@@ -33,7 +33,7 @@ const createWallet = async (req, res) => {
 const deposit = async (req, res) => {
   try {
     const userId = req.user._id;
-    let { walletAddress, cryptoType, amount } = req.body.data;
+    let { walletAddress, tokenAddress, amount } = req.body.data;
     walletAddress = new PublicKey(walletAddress);
     const balance = await checkBalance(walletAddress);
 
@@ -51,8 +51,9 @@ const deposit = async (req, res) => {
     await updateWallet(
       userId,
       walletAddress,
-      cryptoType,
-      amount * LAMPORTS_PER_SOL - feeInLamports
+      tokenAddress,
+      amount * LAMPORTS_PER_SOL - feeInLamports,
+      0
     );
     res.status(200).send({
       message: `${amount - feeInLamports/LAMPORTS_PER_SOL}SOL transfered successfully`,
@@ -65,8 +66,8 @@ const deposit = async (req, res) => {
 const withdraw = async (req, res) => {
   try {
     const userId = req.user._id;
-    let { walletAddress, cryptoType, amount } = req.body.data;
-    const balance = await getBalanceFromDB(userId, walletAddress, cryptoType);
+    let { walletAddress, tokenAddress, amount } = req.body.data;
+    const balance = await getBalanceFromDB(userId, walletAddress, tokenAddress);
 
     if (balance < amount) {
       res.json(424).send({
@@ -80,6 +81,13 @@ const withdraw = async (req, res) => {
     const senderKeyPair = Keypair.fromSecretKey(senderPrivateKey);
     walletAddress = new PublicKey(walletAddress);
     const feeInLamports = await transferSOL(senderKeyPair, walletAddress, amount);
+    await updateWallet(
+      userId,
+      walletAddress,
+      tokenAddress,
+      amount * LAMPORTS_PER_SOL,
+      1
+    );
     res.status(200).send({
       message: `${amount - feeInLamports/LAMPORTS_PER_SOL}SOL withdrawn successfully`,
     });
