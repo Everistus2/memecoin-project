@@ -1,7 +1,7 @@
 const fs = require("fs");
 const axios = require("axios");
 
-const main = async () => {
+const fetchAndSaveLatestTokens = async () => {
   setInterval(async () => {
     try {
       // Get Latest Token list
@@ -82,4 +82,4 @@ const saveToList = (data) => {
   }
 };
 
-module.exports = main;
+module.exports = fetchAndSaveLatestTokens;

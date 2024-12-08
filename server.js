@@ -2,14 +2,14 @@ const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db.js");
 const cors = require("cors");
-const main = require('./app.js');
+const fetchAndSaveLatestTokens = require('./app.js');
 
-const authRoutes = require('./routes/authRoute.js')
-const userRoutes = require('./routes/userRoute.js')
+const authRoutes = require('./routes/authRoutes.js')
+const userRoutes = require('./routes/userRoutes.js')
 
 dotenv.config();
 connectDB();
-main();
+fetchAndSaveLatestTokens();
 
 const app = express();
 app.use(cors());

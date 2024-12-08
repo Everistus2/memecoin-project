@@ -1,14 +1,10 @@
 const JWT = require("jsonwebtoken");
-const userModel = require("../models/userModel.js");
 
-// Protected Route Token Base
+const userModel = require("../models/userModel.js");
 
 const requireSignIn = async (req, res, next) => {
   try {
-    const decode = JWT.verify(
-      req.headers.authorization,
-      process.env.JWT_SECRET
-    );
+    const decode = JWT.verify(req.headers.authorization, process.env.JWT_SECRET);
     req.user = decode;
     next();
   } catch (error) {
@@ -41,5 +37,5 @@ const isAdmin = async (req, res, next) => {
 
 module.exports = {
   requireSignIn,
-  isAdmin
-}
+  isAdmin,
+};

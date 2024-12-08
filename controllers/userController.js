@@ -2,13 +2,11 @@ const walletModel = require("../models/walletModel");
 const createSolWallet = require("../utils/walletCreator");
 const updateWallet = require("../utils/updateWallet");
 const { getPrivateKey, getBalanceFromDB } = require("../utils/utils");
-const { checkBalance, transferSOL } = require("../utils/trade");
+const { checkBalance, transferSOL } = require("../utils/transfer");
 const bs58 = require("bs58");
+const swap = require("../utils/trade");
 
-
-const { Connection, Keypair, PublicKey, LAMPORTS_PER_SOL } = require("@solana/web3.js");
-// const { Market } = require("@project-serum/serum");
-// const connection = new Connection("https://api.devnet.solana.com", "confirmed");
+const {Keypair, PublicKey, LAMPORTS_PER_SOL } = require("@solana/web3.js");
 
 const createWallet = async (req, res) => {
   try {
@@ -17,7 +15,7 @@ const createWallet = async (req, res) => {
       userId: req.user._id,
       privateKey: keypair.privateKey,
       address: keypair.publicKey,
-      balances: [{ currencyType: "Sol", amount: 0 }],
+      balances: [{ token: "So11111111111111111111111111111111111111112", amount: 0 }],
     });
     await solWallet.save();
 
@@ -56,7 +54,7 @@ const deposit = async (req, res) => {
       0
     );
     res.status(200).send({
-      message: `${amount - feeInLamports/LAMPORTS_PER_SOL}SOL transfered successfully`,
+      message: `${amount - feeInLamports / LAMPORTS_PER_SOL}SOL transfered successfully`,
     });
   } catch (err) {
     console.log("deposit error:", err);
@@ -81,31 +79,21 @@ const withdraw = async (req, res) => {
     const senderKeyPair = Keypair.fromSecretKey(senderPrivateKey);
     walletAddress = new PublicKey(walletAddress);
     const feeInLamports = await transferSOL(senderKeyPair, walletAddress, amount);
-    await updateWallet(
-      userId,
-      walletAddress,
-      tokenAddress,
-      amount * LAMPORTS_PER_SOL,
-      1
-    );
+    await updateWallet(userId, walletAddress, tokenAddress, amount * LAMPORTS_PER_SOL, 1);
     res.status(200).send({
-      message: `${amount - feeInLamports/LAMPORTS_PER_SOL}SOL withdrawn successfully`,
+      message: `${amount - feeInLamports / LAMPORTS_PER_SOL}SOL withdrawn successfully`,
     });
   } catch (err) {
     console.log("withdraw error:", err);
   }
 };
 
-//req.marketAddress, req.userId, req.walletAddress, req.side, req.price, req.size
-const trade = async (req, res) => {
-      
+const tradeIn = async (req, res) => {
+  await swap();
 };
 
 const test = async (req, res) => {
   try {
-    // updateWallet(req.user._id, "44563rW251z6Gi1JC1icG27T3aa1puTi2P2sdSF2dcVP", "SOL", 0.19999, 0);
-    const balance = await checkBalance(new PublicKey(req.body.data.walletAddress));
-    console.log(balance)
     await res.status(200).send({
       message: "test is ok",
     });
@@ -118,6 +106,6 @@ module.exports = {
   createWallet,
   deposit,
   withdraw,
-  trade,
+  tradeIn,
   test,
 };

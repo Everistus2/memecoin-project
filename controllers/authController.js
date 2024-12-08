@@ -4,31 +4,16 @@ const bcrypt = require("bcrypt");
 
 const saltRounds = 10;
 
-const registerController = async (req, res) => {
+const register = async (req, res) => {
   try {
-    const { name, email, password, phone } = req.body;
-
-    // Validation
-    if (!name) {
-      return res.send({ message: "Name Is Required!" });
-    }
-    if (!email) {
-      return res.send({ message: "Email Is Required!" });
-    }
-    if (!password) {
-      return res.send({ message: "Password Is Required!" });
-    }
-    if (!phone) {
-      return res.send({ message: "Phone Number Is Required!" });
-    }
+    const { username, email, password, phone } = req.body;
 
     // Check User
     const existingUser = await userModel.findOne({ email });
 
     // Existing user
     if (existingUser) {
-      return res.status(200).send({
-        success: false,
+      return res.status(424).send({
         message: "Already registered, please login",
       });
     }
@@ -38,21 +23,19 @@ const registerController = async (req, res) => {
 
     // Save
     const user = await new userModel({
-      name,
+      username,
       email,
       phone,
       password: hashedPassword,
     }).save();
 
     res.status(201).send({
-      success: true,
       message: "User Register Successfully",
       user,
     });
   } catch (error) {
     console.log(error);
     res.status(500).send({
-      success: false,
       message: "Error in registration",
       error,
     });
@@ -60,26 +43,15 @@ const registerController = async (req, res) => {
 };
 
 // POST LOGIN
-const loginController = async (req, res) => {
+const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    // Validation
-
-    console.log(email, password)
-    if (!email || !password) {
-      return res.status(404).send({
-        success: false,
-        message: "Invalid email or password",
-      });
-    }
 
     // Check User
     const user = await userModel.findOne({ email });
 
     if (!user) {
-      return res.status(404).send({
-        success: false,
+      return res.status(400).send({
         message: "Email is not registered",
       });
     }
@@ -87,8 +59,7 @@ const loginController = async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
 
     if (!match) {
-      return res.status(200).send({
-        success: false,
+      return res.status(400).send({
         message: "Invalid Password",
       });
     }
@@ -99,10 +70,9 @@ const loginController = async (req, res) => {
     });
 
     res.status(200).send({
-      success: true,
       message: "Login successfully",
       user: {
-        name: user.name,
+        username: user.username,
         email: user.email,
         phone: user.phone,
         role: user.role,
@@ -112,7 +82,6 @@ const loginController = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).send({
-      success: false,
       message: "Error in login",
       error,
     });
@@ -120,9 +89,9 @@ const loginController = async (req, res) => {
 };
 
 // update profile
-const updateProfileController = async (req, res) => {
+const update = async (req, res) => {
   try {
-    const { name, email, password, phone } = req.body;
+    const { username, email, password, phone } = req.body;
     const user = await userModel.findById(req.user._id);
 
     // password
@@ -135,7 +104,7 @@ const updateProfileController = async (req, res) => {
     const updatedUser = await userModel.findByIdAndUpdate(
       req.user._id,
       {
-        name: name || user.name,
+        username: username || user.username,
         password: hashedPassword || user.password,
         phone: phone || user.phone,
       },
@@ -143,14 +112,12 @@ const updateProfileController = async (req, res) => {
     );
 
     res.status(200).send({
-      success: true,
       message: "Profile update successfully",
       updatedUser,
     });
   } catch (error) {
     console.log(error);
     res.status(400).send({
-      success: false,
       message: "Error while updating profile",
       error,
     });
@@ -158,7 +125,7 @@ const updateProfileController = async (req, res) => {
 };
 
 module.exports = {
-  registerController,
-  loginController,
-  updateProfileController,
+  register,
+  login,
+  update,
 };
